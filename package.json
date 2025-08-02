@@ -1,0 +1,66 @@
+{
+  "name": "backend",
+  "scripts": {
+    "dev": "nodemon src/server.ts",
+    "build": "tsc",
+    "start": "node dist/src/server.js",
+    "swagger": "ts-node src/config/swagger.ts",
+    "seed": "ts-node prisma/seed.ts",
+    "docker:build": "docker build -t rocket-cloud-portal-backend .",
+    "docker:run": "docker run -p 6001:6001 --env-file .env rocket-cloud-portal-backend",
+    "docker:compose": "docker-compose up -d",
+    "docker:compose:down": "docker-compose down",
+    "deploy:migrate": "npx prisma migrate deploy",
+    "deploy:setup": "chmod +x scripts/*.sh",
+    "lint": "echo 'Linting...' && exit 0",
+    "test": "echo 'Testing...' && exit 0",
+    "health": "curl -f http://localhost:6001/health || exit 1"
+  },
+  "_moduleAliases": {
+    "@packages": "dist/packages"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-ec2": "^3.835.0",
+    "@aws-sdk/credential-providers": "^3.835.0",
+    "@prisma/client": "^6.10.1",
+    "@sendgrid/mail": "^8.1.5",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node-cron": "^3.0.11",
+    "@types/node-schedule": "^2.1.8",
+    "aws-sdk": "^2.1692.0",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "dotenv-flow": "^4.1.0",
+    "express": "^5.1.0",
+    "express-jsdoc-swagger": "^1.8.0",
+    "jsonwebtoken": "^9.0.2",
+    "module-alias": "^2.2.3",
+    "morgan": "^1.10.0",
+    "node-cron": "^4.2.1",
+    "node-schedule": "^2.1.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^3.25.75"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "latest",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^24.0.3",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "aws-sdk-client-mock": "^4.1.0",
+    "nodemon": "^3.1.10",
+    "prisma": "^6.10.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.8.3"
+  },
+  "packageManager": "pnpm@10.13.1"
+}

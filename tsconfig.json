@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "baseUrl": ".",
+    "rootDir": "./",
+    "outDir": "dist",
+    "paths": {
+      "@packages/*": ["packages/*"],
+      "@apps/*": ["apps/*"],
+    },
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  }
+  ,
+  "include": [
+    "src/**/*",
+    "packages/**/*",
+    "src/generated/**/*",
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+  ]
+}

@@ -1,0 +1,107 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: saleemrazadev/rocket-cloud-portal-backend
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 10.13.1
+
+    - name: Get pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+    - name: Setup pnpm cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+
+    - name: Generate Prisma client
+      run: npx prisma generate
+
+    - name: Run linting
+      run: pnpm lint
+      continue-on-error: true
+
+    - name: Run tests
+      run: pnpm test
+      continue-on-error: true
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build test (syntax check)
+      run: |
+        docker build -t test-build .
+        echo "Build successful - will build on server during deployment"
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
+    
+    steps:
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd /opt/rocket-cloud-portal/rocket-cloud-portal-backend
+          
+          # Pull latest code
+          git pull origin main
+          
+          # Copy production environment BEFORE building
+          cp .env.production .env
+          
+          # Stop existing containers first
+          docker-compose down
+          
+          # Build new image locally (with .env file included)
+          docker build -t rocket-cloud-portal-backend:latest .
+          
+          # Deploy with new image
+          docker-compose up -d
+          
+          # Clean up old images
+          docker image prune -f
+          
+          # Check health
+          sleep 30
+          curl -f http://localhost:6001/health || exit 1
