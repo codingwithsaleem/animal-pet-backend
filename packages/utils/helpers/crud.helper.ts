@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { handleDatabaseOperation, sendSuccessResponse } from "../error-handaler/error-middleware";
+import { handleDatabaseOperation, sendSuccessResponse } from "../../error-handaler/error-middleware";
 import { 
   ValidationError, 
   NotFoundError, 
   UnauthorizedError, 
   ForbiddenError 
-} from "../error-handaler/index";
+} from "../../error-handaler/index";
 import { 
   extractPaginationParams, 
   getPaginatedResponse, 

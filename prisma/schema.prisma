@@ -16,18 +16,20 @@ datasource db {
 // table for User 
 
 model User {
-  id        String    @id @default(uuid())
-  phone      String?   @unique
-  email     String    @unique
+  id        String   @id @default(uuid())
+  phone     String?  @unique
+  email     String   @unique
   password  String
   fullName  String?
-  status    String    @default("active")
-  isAdmin   Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  status    String   @default("active")
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  sessions          Session[]
+  sessions         Session[]
   otpVerifications OtpVerification[]
+  cats             Cat[]
+  dogs             Dog[]             @relation("DogOwner")
 }
 
 // table for user sessions
@@ -54,13 +56,81 @@ model OtpVerification {
   attemptCount   Int       @default(0) // Number of verification attempts
   otpCooldown    DateTime? // When the user can request a new OTP
   otpLockedUntil DateTime? // If locked out, when they can try again
+  userId        String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  user           User?     @relation(fields: [userId], references: [id])
-  userId        String?
+  user   User?   @relation(fields: [userId], references: [id])
+  @@index([email, type]) // Index for faster lookups
+  @@index([userId]) // Index for faster lookups by user
 }
 
+// Animal Tables 
 
+model Cat {
+  id                                 String    @id @default(uuid())
+  tagNumber                         String    @unique
+  na                                String
+  lastName                          String
+  givenName                         String
+  addressNo                         String
+  lotNo                             String
+  houseNo                           String
+  street                            String
+  suburb                            String
+  name                              String    // Animal name
+  breedCode                         String
+  breed                             String
+  colour                            String
+  markings                          String
+  sterilised                        Boolean   @default(false)
+  nextYearTagNo                     String
+  oldTagNo                          String
+  microchipNo                       String
+  currentConvictionBannedStartDate  DateTime?
+  currentConvictionBannedEndDate    DateTime?
+  ownerId                           String?
+  owner                             User?     @relation(fields: [ownerId], references: [id])
+  createdAt                         DateTime  @default(now())
+  updatedAt                         DateTime  @updatedAt
 
+  @@index([tagNumber])
+  @@index([name])
+  @@index([microchipNo])
+  @@index([ownerId])
+}
 
+model Dog {
+  id                                 String    @id @default(uuid())
+  tagNumber                         String    @unique
+  na                                String
+  lastName                          String
+  givenName                         String
+  addressNo                         String
+  lotNo                             String
+  houseNo                           String
+  street                            String
+  suburb                            String
+  name                              String    // Animal name
+  breedCode                         String
+  breed                             String
+  colour                            String
+  markings                          String
+  sterilised                        Boolean   @default(false)
+  nextYearTagNo                     String
+  oldTagNo                          String
+  microchipNo                       String
+  currentConvictionBannedStartDate  DateTime?
+  currentConvictionBannedEndDate    DateTime?
+  dangerous                         Boolean   @default(false)
+  animalBreeder                     Boolean   @default(false)
+  ownerId                           String?
+  owner                             User?     @relation(fields: [ownerId], references: [id], name: "DogOwner")
+  createdAt                         DateTime  @default(now())
+  updatedAt                         DateTime  @updatedAt
+
+  @@index([tagNumber])
+  @@index([name])
+  @@index([microchipNo])
+  @@index([ownerId])
+}

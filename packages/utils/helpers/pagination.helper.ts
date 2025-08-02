@@ -1,6 +1,6 @@
 import { Request } from "express";
-import { handleDatabaseOperation } from "../error-handaler/error-middleware";
-import { ValidationError } from "../error-handaler/index";
+import { handleDatabaseOperation } from "../../error-handaler/error-middleware";
+import { ValidationError } from "../../error-handaler/index";
 
 export interface PaginationOptions {
   page?: number;
