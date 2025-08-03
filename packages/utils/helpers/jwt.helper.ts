@@ -3,8 +3,10 @@ import crypto from 'crypto';
 import { UnauthorizedError, TokenExpiredError, InvalidTokenError } from '../../error-handaler/index';
 
 // JWT Configuration
-const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'your-access-token-secret-key';
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'your-refresh-token-secret-key';
+const ACCESS_TOKEN_SECRET: string = process.env.ACCESS_TOKEN_SECRET as string;
+const REFRESH_TOKEN_SECRET: string = process.env.REFRESH_TOKEN_SECRET as string;
+const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN as string || '7d';
+const JWT_REFRESH_EXPIRES_IN: string = process.env.JWT_REFRESH_EXPIRES_IN as string || '30d';
 
 
 export interface TokenPayload {
@@ -28,9 +30,9 @@ export const generateAccessToken = (payload: Omit<TokenPayload, 'type'>): string
   const tokenPayload = { ...payload, type: 'access' as const };
   
   const options: SignOptions = {
-    expiresIn: "15m",
-    issuer: 'rocket-cloud-portal',
-    audience: 'rocket-cloud-portal-users'
+    expiresIn: JWT_EXPIRES_IN as jwt.SignOptions['expiresIn'],
+    issuer: 'animal-adoption-portal',
+    audience: 'animal-adoption-portal-users'
   };
   
   return jwt.sign(tokenPayload, ACCESS_TOKEN_SECRET, options);
@@ -43,9 +45,9 @@ export const generateRefreshToken = (payload: Omit<TokenPayload, 'type'>): strin
   const tokenPayload = { ...payload, type: 'refresh' as const };
   
   const options: SignOptions = {
-    expiresIn: "30d",
-    issuer: 'rocket-cloud-portal',
-    audience: 'rocket-cloud-portal-users'
+    expiresIn: JWT_REFRESH_EXPIRES_IN as jwt.SignOptions['expiresIn'],
+    issuer: 'animal-adoption-portal',
+    audience: 'animal-adoption-portal-users'
   };
   
   return jwt.sign(tokenPayload, REFRESH_TOKEN_SECRET, options);
@@ -78,8 +80,8 @@ export const generateTokenPair = (userId: string, email: string, sessionId: stri
 export const verifyAccessToken = (token: string): TokenPayload => {
   try {
     const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET, {
-      issuer: 'rocket-cloud-portal',
-      audience: 'rocket-cloud-portal-users'
+      issuer: 'animal-adoption-portal',
+      audience: 'animal-adoption-portal-users'
     }) as TokenPayload;
     
     if (decoded.type !== 'access') {
@@ -106,8 +108,8 @@ export const verifyAccessToken = (token: string): TokenPayload => {
 export const verifyRefreshToken = (token: string): TokenPayload => {
   try {
     const decoded = jwt.verify(token, REFRESH_TOKEN_SECRET, {
-      issuer: 'rocket-cloud-portal',
-      audience: 'rocket-cloud-portal-users'
+      issuer: 'animal-adoption-portal',
+      audience: 'animal-adoption-portal-users'
     }) as TokenPayload;
     
     if (decoded.type !== 'refresh') {
