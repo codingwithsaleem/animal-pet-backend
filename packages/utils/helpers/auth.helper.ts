@@ -80,17 +80,17 @@ export const sendOtpEmail = async (
     });
 
     // Send email
-    // await sendEmail(
-    //   email,
-    //   "Your OTP Code",
-    //   `Your OTP code is: ${newOtp}. It is valid for 5 minutes.`,
-    //   templateName,
-    //   {
-    //     otp: newOtp,
-    //     expiresAt: expireAt.toISOString(),
-    //     email: email,
-    //   }
-    // );
+    await sendEmail(
+      email,
+      "Your OTP Code",
+      `Your OTP code is: ${newOtp}. It is valid for 5 minutes.`,
+      templateName,
+      {
+        otp: newOtp,
+        expiresAt: expireAt.toISOString(),
+        email: email,
+      }
+    );
 
     return { success: true, message: "OTP sent successfully" };
   } catch (error) {

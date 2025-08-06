@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { userRegister, verifyUserRegistration, userLogin, forgotPassword, verifyForgotPasswordOtp, resetPassword, refreshToken, userLogout } from '../../controller/auth.controller';
+import { userRegister, verifyUserRegistration, userLogin, forgotPassword, verifyForgotPasswordOtp, resetPassword, refreshToken, userLogout, resendVerificationOtp } from '../../controller/auth.controller';
 import { authenticateToken } from '../../../packages/utils/middlewares/auth.middleware';
 
 const autRrouter: Router = express.Router();
@@ -62,6 +62,13 @@ const autRrouter: Router = express.Router();
  * @property {string} sessionId.required - Session ID
  */
 
+/**
+ * Resend verification OTP request
+ * @typedef {object} ResendVerificationOtpRequest
+ * @property {string} email.required - User email
+ * @property {string} type - OTP type: 'verification' or 'password_reset' (default: 'verification')
+ */
+
 
 
 
@@ -83,6 +90,24 @@ autRrouter.post('/user-register', userRegister);
  * @return {object} 200 - Success
  */
 autRrouter.post('/user-verify', verifyUserRegistration);
+
+/**
+ * POST /auth/resend-verification-otp
+ * @tags Auth
+ * @summary Resend OTP (verification or password reset)
+ * @param {ResendVerificationOtpRequest} request.body.required - Resend OTP data
+ * @return {object} 200 - Success
+ */
+autRrouter.post('/resend-verification-otp', resendVerificationOtp);
+
+/**
+ * POST /auth/resend-otp
+ * @tags Auth
+ * @summary Resend OTP (alias for resend-verification-otp)
+ * @param {ResendVerificationOtpRequest} request.body.required - Resend OTP data
+ * @return {object} 200 - Success
+ */
+autRrouter.post('/resend-otp', resendVerificationOtp);
 
 /**
  * POST /auth/user-login

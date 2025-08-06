@@ -4,7 +4,7 @@ export const verifyEmailOtpTemplate = (data:any) => {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Email Verification - Rocket Surgery</title>
+  <title>Email Verification - Animal Pet Adoption Platform</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -70,16 +70,16 @@ export const verifyEmailOtpTemplate = (data:any) => {
 <body>
   <div class="container">
     <div class="header">
-      <h1>Rocket Surgery</h1>
+      <h1>Animal Pet Adoption Platform</h1>
     </div>
     <div class="content">
       <h2>Verify Your Email</h2>
-      <p>Use the one-time code below to verify your email address and start your journey with Rocket Surgery.</p>
+      <p>Use the one-time code below to verify your email address and start your journey with Animal Pet Adoption Platform.</p>
       <div class="otp-box">${data?.otp}</div>
       <p class="note">This code will expire in 5 minutes. Please do not share it with anyone.</p>
     </div>
     <div class="footer">
-      &copy; 2025 Rocket Surgery. All rights reserved.
+      &copy; 2025 Animal Pet Adoption Platform. All rights reserved.
     </div>
   </div>
 </body>

@@ -616,3 +616,71 @@ export const userLogout = asyncHandler(async (req: Request, res: Response) => {
 
   sendSuccessResponse(res, null, "Logged out successfully", 200);
 });
+
+// Resend verification OTP
+export const resendVerificationOtp = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email, type = "verification" } = req.body;
+
+    // Validate required fields
+    const requiredFieldError = validateRequiredFields(req.body, ["email"]);
+    if (requiredFieldError) {
+      throw requiredFieldError;
+    }
+
+    // Validate email format
+    const emailValidationError = validateField(email, "email", {
+      required: true,
+      type: "email",
+    });
+    if (emailValidationError) {
+      throw emailValidationError;
+    }
+
+    // Validate type
+    if (type && !["verification", "password_reset"].includes(type)) {
+      throw new ValidationError("Type must be either 'verification' or 'password_reset'");
+    }
+
+    // Check if user exists
+    const existingUser = await handleDatabaseOperation(
+      () => prisma.user.findUnique({ where: { email } }),
+      "checking existing user"
+    );
+
+    if (!existingUser) {
+      throw new NotFoundError("User not found with this email");
+    }
+
+    // For verification OTP: Check if user is already verified
+    if (type === "verification" && existingUser.status === "active") {
+      throw new ConflictError("User is already verified");
+    }
+
+    // For password reset OTP: User must be verified (active)
+    if (type === "password_reset" && existingUser.status !== "active") {
+      throw new UnauthorizedError("Account is not verified. Please verify your account first.");
+    }
+
+    // Check OTP restrictions
+    const restrictionCheck = await checkOtpRestriction(email);
+    if (!restrictionCheck.allowed) {
+      throw new OTPAttemptsExceededError(restrictionCheck.message!);
+    }
+
+    // Determine which email template to use
+    const emailTemplate = type === "verification" ? "verifyEmailOtpTemplate" : "forgotPasswordOtpTemplate";
+
+    // Send OTP email
+    const otpResult = await sendOtpEmail(email, emailTemplate);
+    if (!otpResult.success) {
+      throw new Error(`Failed to send ${type} OTP`);
+    }
+
+    const message = type === "verification" 
+      ? "Verification OTP sent successfully" 
+      : "Password reset OTP sent successfully";
+
+    sendSuccessResponse(res, null, otpResult.message || message, 200);
+  }
+);

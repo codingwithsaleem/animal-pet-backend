@@ -1,14 +1,12 @@
 import { ValidationError } from "../../../packages/error-handaler";
 import sgMail from "@sendgrid/mail";
-import { NextFunction } from "express";
 import { verifyEmailOtpTemplate } from "./verifyEmailOtpTemplate";
 import { resetPasswordTemplate } from "./resetPasswordTemplate";
 import { welcomeTemplate } from "./welcomeTemplate";
 import { forgotPasswordOtpTemplate } from "./forgotPasswordOtpTemplate";
-import { inviteTemplate } from "./inviteTemplate";
 
 const enabled = true; // Set to true to enable email sending
-const emailSender = process.env.EMAIL_FROM!;
+const emailSender = process.env.SENDGRID_FROM_EMAIL!;
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
@@ -32,8 +30,8 @@ export const sendEmail = async (
 
   // Debug: Check environment variables
   // console.log("=== SendGrid Debug Info ===");
-  // console.log("EMAIL_FROM:", emailSender);
-  // console.log("SENDGRID_API_KEY exists:", !!process.env.SENDGRID_API_KEY);
+  console.log("SENDGRID_FROM_EMAIL:", emailSender);
+  console.log("SENDGRID_API_KEY exists:", !!process.env.SENDGRID_API_KEY);
   // console.log("SENDGRID_API_KEY length:", process.env.SENDGRID_API_KEY?.length || 0);
 
   if (enabled) {
@@ -54,8 +52,10 @@ export const sendEmail = async (
         template = resetPasswordTemplate(data);
       } else if (emailTemplateName === "forgotPasswordOtpTemplate") {
         template = forgotPasswordOtpTemplate(data);
-      } else if (emailTemplateName === "inviteTemplate") {
-        template = inviteTemplate(data);
+      }else{
+        throw new ValidationError("Invalid email template name", {
+          details: { emailTemplateName },
+        });
       }
 
       const msg = {

@@ -25,11 +25,7 @@ app.use(
       "http://localhost:3000",
       "http://localhost:6001",
       "http://localhost:3001",
-      "http://ec2-3-221-33-232.compute-1.amazonaws.com",
-      "http://ec2-3-221-33-232.compute-1.amazonaws.com:6001",
-      "https://rocket-cloud-portal-frontend.vercel.app",
-      "https://api.staging.rocketlabs.cloud",
-      "https://api.staging.rocketlabs.cloud/api/v1",
+      "https://tlztdz38-6001.inc1.devtunnels.ms"
     ],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
